@@ -1,0 +1,18 @@
+#!/bin/bash
+
+includes() {
+    local element_to_check="$1"
+    local array=("${@:2}")  # Get all elements after the first one
+    
+    found=false
+
+    for item in "${array[@]}"; do
+        if [[ "$item" == "$element_to_check" ]]; then
+            found=true
+            break
+        fi
+    done
+    
+    # echo $found
+    $found
+}

@@ -1,0 +1,45 @@
+#!/bin/bash
+
+reset=$'\e[0m'
+br=$'\n'
+
+black=$'\e[1;30m'
+Black () {
+    echo $black$@$reset
+}
+
+red=$'\e[1;31m'
+Red () {
+    echo $red$@$reset
+}
+
+green=$'\e[1;32m'
+Red () {
+    echo $red$@$reset
+}
+
+yellow=$'\e[1;33m'
+Yellow () {
+   echo $yellow$@$reset 
+}
+
+blue=$'\e[1;34m'
+Blue () {
+    echo $blue$@$reset
+}
+
+purple=$'\e[1;35m'
+Purple () {
+    echo $purple$@$reset
+}
+
+cyan=$'\e[1;36m'
+Cyan () {
+    echo $cyan$@$reset
+}
+
+white=$'\e[1;37m'
+White () {
+    echo $white$@$reset
+}
+
