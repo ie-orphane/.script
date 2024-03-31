@@ -1,1 +1,140 @@
-#!/bin/bashw
+#!/bin/bash
+
+. ~/.script/utils/*
+
+CMD=discord
+SRC=~/.script/src/$CMD
+
+new () {
+    # check new folder
+    if [[ "$#" > 1 ]]; then
+        # check folder if exists
+        if [[ -e $2 ]]; then
+            echo "$(Red [Error]) $(White $2) already exists!"
+            return
+        fi
+        
+        mkdir $2
+        cd $2
+        echo "$(Blue [Info]) $(White $2) created!"
+    fi
+    
+    # virtual environment
+    python -m venv .venv
+    source ./.venv/Scripts/activate
+    
+    # packages
+    cp $SRC/requirements.txt ./requirements.txt
+    pip install -r requirements.txt
+    
+    # folder structre
+    cp $SRC/bot.py ./bot.py
+    mkdir ./assets
+    for dir in 'cogs' 'tasks' 'utils'; do
+        mkdir ./$dir
+        touch $_/__init__.py
+    done
+    
+    # git setup
+    cp $SRC/.gitignore ./.gitignore
+    cp $SRC/.env.example ./.env.example
+    cp $SRC/.env.example ./.env
+    echo "# $(basename $(PWD))" > ./README.md
+}
+
+add() {
+    if [ "$#" -eq 0 ]; then
+        echo -e "$(Red [error]) $(White $CMD add) command missed option"
+    else
+        case "$1" in
+            #  -c|--cog
+            -c|--cog)
+                if [[ ! -d ./cogs ]]; then
+                    echo "$(Red [error]) folder $(White cogs) not found"
+                    exit
+                fi
+
+                if [[ ! "$2" ]]; then
+                    echo -e "$(Red [error]) $(White $CMD add $1) command missed option"
+                    exit
+                fi
+
+                sed "s/_Name_/\u${2,,}/g; s/_name_/${2,,}/g" $SRC/__cog__.py > ./cogs/__${2,,}__.py
+            ;;
+            #  -m|--model
+            -m|--model)
+                echo model
+            ;;
+            #  -t|--task
+            -t|--task)
+                echo task
+            ;;
+            *)
+                echo "$(Red [Error]) Unknown option $(White $1)"
+            ;;
+        esac
+    fi
+}
+
+
+
+if [ "$#" -eq 0 ]; then
+    echo -e "$(Red [error]) $(White $CMD) command missed option\n$(Yellow [indice]) Try:"
+    cat $SRC/README.md
+else
+    case "$1" in
+        # discord new
+        #     create new discord.py project
+        new)
+            new $@
+        # discord run
+        #     run the bot
+        ;;
+        run)
+            if [[ ! -f ./bot.py ]]; then
+                echo "$(Red [Error]) No such file $(White bot.py)"
+                exit
+            fi
+            
+            python ./bot.py
+        ;;
+        # discord add
+        #         -c --cog
+        #         -t --task
+        #         -m --model
+        add)
+            shift
+            add $@
+        ;;
+        # discord install
+        #     install a dependency and add it to requirements.txt
+        install)
+            shift
+            pip install $@
+            pip freeze > ./requirements.txt
+        ;;
+        # discord init
+        #     copy the .env.example to .env if not existed
+        init)
+            if [[ ! -e ./.env ]]; then
+                cp $SRC/.env.example ./.env
+            fi
+            #         -d --data
+            #             add data & models
+            shift
+            if includes $1 -d --data ; then
+                for dir in "data" "models"; do
+                    mkdir "./$dir"
+                    touch $_/__init__.py
+                done
+            elif [[ $# != 0 ]] ; then
+                echo unkown option $1
+            fi
+        ;;
+        
+        *)
+            echo "$(Red [Error]) Unknown option $(White $1)"
+        ;;
+    esac
+    
+fi
