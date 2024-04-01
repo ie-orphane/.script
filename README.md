@@ -5,7 +5,7 @@
 ```bash
 cd ~/
 git clone https://github.com/ie-orphane/.script.git
-echo "export PATH=\"~/.script/commands:\$PATH\"" >> ~/.bash_profile
+echo "export PATH=\"~/.script/commands:\$PATH\"" >> ~/.bash_profile ~/.bashrc
 ```
 
 ## discord

@@ -20,7 +20,7 @@ new () {
     fi
     
     # virtual environment
-    python -m venv .venv
+    python3 -m venv .venv
     source ./.venv/Scripts/activate
     
     # packages
@@ -96,7 +96,7 @@ else
                 exit
             fi
             
-            python ./bot.py
+            python3 ./bot.py
         ;;
         # discord add
         #         -c --cog
