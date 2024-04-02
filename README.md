@@ -21,7 +21,7 @@ echo "export PATH=\"~/.script/commands:\$PATH\"" >>  ~/.bashrc
 sudo chmod +x ~/.script/commands/discord
 ```
 
-## discord
+## discord commands
 
 - `discord new` create new discord.py project
 - `discord install` install a dependency and add it to requirements.txt
