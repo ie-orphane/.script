@@ -29,7 +29,7 @@ new () {
     
     # folder structre
     cp $SRC/bot.py ./bot.py
-    mkdir ./assets
+    mkdir ./{assets,storage}
     for dir in 'cogs' 'tasks' 'utils'; do
         mkdir ./$dir
         touch $_/__init__.py
@@ -43,37 +43,41 @@ new () {
 }
 
 add() {
-    if [ "$#" -eq 0 ]; then
-        echo -e "$(Red [error]) $(White $CMD add) command missed option"
-    else
-        case "$1" in
-            #  -c|--cog
-            -c|--cog)
-                if [[ ! -d ./cogs ]]; then
-                    echo "$(Red [error]) folder $(White cogs) not found"
-                    exit
-                fi
-
-                if [[ ! "$2" ]]; then
-                    echo -e "$(Red [error]) $(White $CMD add $1) command missed option"
-                    exit
-                fi
-
-                sed "s/_Name_/\u${2,,}/g; s/_name_/${2,,}/g" $SRC/__cog__.py > ./cogs/__${2,,}__.py
-            ;;
-            #  -m|--model
-            -m|--model)
-                echo model
-            ;;
-            #  -t|--task
-            -t|--task)
-                echo task
-            ;;
-            *)
-                echo "$(Red [Error]) Unknown option $(White $1)"
-            ;;
-        esac
-    fi
+    case "$1" in
+        #  -c|--cog
+        -c|--cog)
+            if [[ ! -d ./cogs ]]; then
+                echo "$(Red [error]) folder $(White cogs) not found"
+                exit
+            fi
+            
+            if [[ ! "$2" ]]; then
+                echo -e "$(Red [error]) $(White $CMD add $1) command missed option"
+                exit
+            fi
+            
+            sed "s/_Name_/\u${2,,}/g; s/_name_/${2,,}/g" $SRC/__cog__.py > ./cogs/__${2,,}__.py
+        ;;
+        #  -m|--model
+        -m|--model)
+            echo model
+        ;;
+        #  -t|--task
+        -t|--task)
+            echo task
+        ;;
+        # -d|--data
+        -d|--data)
+            for dir in "data" "models"; do
+                mkdir "./$dir"
+                touch $_/__init__.py
+            done
+            cp $SRC/__schema__.py ./models/__schema__.py
+        ;;
+        *)
+            echo "$(Red [Error]) Unknown option $(White $1)"
+        ;;
+    esac
 }
 
 
@@ -87,8 +91,8 @@ else
         #     create new discord.py project
         new)
             new $@
-        # discord run
-        #     run the bot
+            # discord run
+            #     run the bot
         ;;
         run)
             if [[ ! -f ./bot.py ]]; then
@@ -97,14 +101,6 @@ else
             fi
             
             python3 ./bot.py
-        ;;
-        # discord add
-        #         -c --cog
-        #         -t --task
-        #         -m --model
-        add)
-            shift
-            add $@
         ;;
         # discord install
         #     install a dependency and add it to requirements.txt
@@ -118,18 +114,17 @@ else
         init)
             if [[ ! -e ./.env ]]; then
                 cp $SRC/.env.example ./.env
+            else
+                echo "$(Red [Error] $(White .env) already exists.)"
             fi
-            #         -d --data
-            #             add data & models
-            shift
-            if includes $1 -d --data ; then
-                for dir in "data" "models"; do
-                    mkdir "./$dir"
-                    touch $_/__init__.py
-                done
-            elif [[ $# != 0 ]] ; then
-                echo unkown option $1
-            fi
+        ;;
+        # discord
+        #       -c --cog
+        #       -t --task
+        #       -m --model
+        #       -d --data
+        -c|--cog|-t|--task|-m|--model|-d|--data)
+            add $@
         ;;
         
         *)

@@ -1,0 +1,2 @@
+    github -c --commit <meesage>
+    

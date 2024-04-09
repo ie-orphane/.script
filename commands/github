@@ -1,1 +1,29 @@
 #!/bin/bash
+
+. ~/.script/utils/*
+
+CMD=github
+SRC=~/.script/src/$CMD
+
+if [ "$#" -eq 0 ]; then
+    echo -e "$(Red [error]) $(White $CMD) command missed option\n$(Yellow [indice]) Try:"
+    cat $SRC/README.md
+else
+    case "$1" in
+        #? github -c/--commit
+        -c|--commit)
+            if [ "$#" -eq 1 ]; then
+                echo "$(Red [error]) commit message missed!"
+                exit
+            fi
+            # echo $2
+            git add .
+            git commit -m "$2"
+        ;;
+        
+        *)
+            echo "$(Red [Error]) Unknown option $(White $1)"
+        ;;
+    esac
+    
+fi

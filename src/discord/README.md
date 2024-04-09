@@ -1,8 +1,7 @@
-    discord new
+    discord new <name[optional]>
     discord run
     discord init
-    discord add
-        -c --cog    add new slash command
-        -t --task   add new task
-        -m --model  add new databse model
-        
+    discord -d --data
+    discord -c --cog <name>    add new slash command
+    discord -t --task <name>   add new task
+    discord -m --model <name>  add new databse model

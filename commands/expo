@@ -1,1 +1,82 @@
 #!/bin/bash
+
+. ~/.script/utils/*
+
+CMD=expo
+SRC=~/.script/src/$CMD
+
+
+#Function for "expo add --dependencies" command
+add() {
+    # Check if there are command-line arguments
+    if [ "$#" -eq 0 ]; then
+        echo "$(Red [error]) $(White $CMD add) command missed an argument"
+        return 1
+    fi
+    
+    case "$1" in
+        --screen|-s)
+            shift
+            if [ "$#" -eq 0 ]; then
+                echo "$(Red [error]) $(White expo add -s) command missed an argument(s)"
+            else
+                for name in "$@"; do
+                    if [ -d "./app/screens/${name,,}" ]; then
+                        echo "$(Blue [info]) $(White ${name^}Screen) already exists!"
+                    else
+                        name=${name,,}
+                        mkdir -p ./app/screens/$name
+                        sed "s/_Name_/\u$name/g" $SRC/screen.jsx > $_/"$name"Screen.jsx
+                        echo "export * from \"./$name/${name}Screen\"" >> ./app/screens/index.jsx
+                        echo "$(Blue [info]) $(White ./app/screens/$name/"$name"Screen.jsx) created!"
+                    fi
+                done
+            fi
+        ;;
+        
+        *)
+            echo "$(Red [Error]) Unknown argument $(White $1)"
+        ;;
+    esac
+}
+
+
+if [ "$#" -eq 0 ]; then
+    echo -e "$(Red [error]) $(White $CMD) command missed option\n$(Yellow [indice]) Try:"
+    cat $SRC/README.md
+else
+    case "$1" in
+        #? expo new
+        new)
+            # check new folder
+            if [[ "$#" > 1 ]]; then
+                # check folder if exists
+                if [[ -e $2 ]]; then
+                    echo "$(Red [Error]) $(White $2) already exists!"
+                    return
+                fi
+                
+                mkdir $2
+                cd $2
+                echo "$(Blue [Info]) $(White $2) created!"
+            fi
+            
+            npx create-expo-app .
+            
+            npm i nativewind
+            npm install --save-dev tailwindcss@3.3.2
+            npx tailwindcss init
+            
+            cp -r $SRC/structre ./
+        ;;
+        #? expo -s|--screen <screen's name>
+        -s|--screen)
+            add $@
+        ;;
+        
+        *)
+            echo "$(Red [Error]) Unknown option $(White $1)"
+        ;;
+    esac
+    
+fi
