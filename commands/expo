@@ -4,6 +4,7 @@
 
 CMD=expo
 SRC=~/.script/src/$CMD
+MOCK=~/.script/mock/$CMD
 
 
 #Function for "expo add --dependencies" command
@@ -66,8 +67,9 @@ else
             npm i nativewind
             npm install --save-dev tailwindcss@3.3.2
             npx tailwindcss init
-            
-            cp -r $SRC/structre ./
+
+            rm -rf .git App.js
+            cp -r $MOCK/* ./
         ;;
         #? expo -s|--screen <screen's name>
         -s|--screen)

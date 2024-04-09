@@ -1,6 +1,6 @@
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
 import { AppProvider } from "./context";
-import { AppNavigation } from "./app/navigation/appNavigation";
+import { AppNavigation } from "./app/navigation";
 
 export default function App() {
   return (

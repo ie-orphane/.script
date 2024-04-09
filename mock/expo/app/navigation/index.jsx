@@ -6,7 +6,7 @@ export const AppNavigation = () => {
 
   const screens = {
     Home: <HomeScreen />,
-    Settings: <ProfileScreen />,
+    Profile: <ProfileScreen />,
   };
 
   return <>{screens[Route]}</>;
