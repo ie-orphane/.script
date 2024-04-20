@@ -16,9 +16,25 @@ else
                 echo "$(Red [error]) commit message missed!"
                 exit
             fi
-            # echo $2
+
             git add .
             git commit -m "$2"
+        ;;
+
+        #? github -l/--link
+        -l|--link)
+            if [ "$#" -eq 1 ]; then
+                echo "$(Red [error]) repository url missed!"
+                exit
+            fi
+
+            echo "# $(basename $(PWD))" >> README.md
+            git init
+            git add .
+            git commit -m "initial commit"
+            git branch -M main
+            git remote add origin $2
+            git push -u origin main
         ;;
         
         *)

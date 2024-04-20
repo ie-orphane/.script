@@ -4,7 +4,7 @@
 
 CMD=expo
 SRC=~/.script/src/$CMD
-MOCK=~/.script/mock/$CMD
+TMP=~/.script/template/$CMD
 
 
 #Function for "expo add --dependencies" command
@@ -69,7 +69,7 @@ else
             npx tailwindcss init
 
             rm -rf .git App.js
-            cp -r $MOCK/* ./
+            cp -r $TMP/* ./
         ;;
         #? expo -s|--screen <screen's name>
         -s|--screen)

@@ -1,1 +1,140 @@
 #!/bin/bash
+
+. ~/.script/utils/*
+
+CMD=laravel
+SRC=~/.script/src/$CMD
+TMP=~/.script/template/$CMD
+
+new() {
+    name="."
+    # check new folder
+    if [[ "$#" > 1 ]]; then
+        # check folder if exists
+        if [[ -e $2 ]]; then
+            echo "$(Red [Error]) $(White $2) already exists!"
+            return
+        fi
+        
+        mkdir $2
+        cd $2
+        echo "$(Blue [Info]) $(White $2) created!"
+    fi
+    
+    composer create-project --prefer-dist laravel/laravel $name
+    
+    # rm -rf ./resources/views
+    # mkdir -p ./resources/views/{layouts,home}
+    
+    # template_dir=~/bash_commands/templates/laravel
+    
+    # # create views/layouts/index.blade.php
+    # source_file=$template_dir/index.blade.php
+    # target_file=./resources/views/layouts/index.blade.php
+    # sed "s/TITLE/$(basename $(PWD))/g" "$source_file" > "$target_file"
+    
+    # # create view/home/index.blade.php
+    # cp "$template_dir/view.blade.php" "./resources/views/home/index.blade.php"
+    # # create Controllers/HomeController.php
+    # cp "$template_dir/HomeController.php" "./app/Http/Controllers/HomeController.php"
+    # # update routes/web.php
+    # cp "$template_dir/web.php" "./routes/web.php"
+}
+
+# function for "laravel -d --dependencies" command
+add() {
+    case "$1" in
+        --tailwind|-t)
+            if [[ -f ./tailwind.config.js ]]; then
+                echo "$(Red [Error]) tailwind already installed!"
+                exit
+            fi
+            
+            npm install -D tailwindcss postcss autoprefixer
+            npx tailwindcss init -p
+            
+            # add @vite to views/layouts/index.blade.php
+            target_file=./resources/views/layouts/index.blade.php
+            sed -i 's#</head>#\t@vite("resources/css/app.css")\n</head>#' "$target_file"
+            
+            # update tailwind.config.js
+            template_dir=~/bash_commands/templates/laravel
+            cp "$template_dir/tailwind.config.js" "./tailwind.config.js"
+            
+            # add @imports to resources/css/app.css
+            target_file=./resources/css/app.css
+            echo -e "@tailwind base;\n@tailwind components;\n@tailwind utilities;" >> $target_file
+        ;;
+        --bootstrap|-b)
+        ;;
+        
+        *)
+            echo "$(Red [Error]) unknown argument $(White $1)"
+        ;;
+    esac
+}
+
+# function for "laravel -a --authentification" command
+auth() {
+    case "$1" in
+        --breeze|-b)
+            composer require laravel/breeze --dev
+            php artisan breeze:install
+        ;;
+        --jetstream|-j)
+            echo jetstream
+        ;;
+        
+        *)
+            echo "$(Red [Error]) unknown argument $(White $1)"
+        ;;
+    esac
+}
+
+
+
+if [ "$#" -eq 0 ]; then
+    echo -e "$(Red [error]) $(White $CMD) command missed option\n$(Yellow [indice]) Try:"
+    cat $SRC/README.md
+else
+    case "$1" in
+        #? laravel new
+        new)
+            new $@
+        ;;
+        
+        #? laravel add
+        add)
+            shift
+            add $@
+        ;;
+        
+        #? laravel auth
+        -b|--breeze|-j|--jetstream)
+            auth $@
+        ;;
+        
+        #? laravel clone
+        clone)
+            shift
+            if [[ "$#" == 0 ]]; then
+                echo "$(Red [Error]) You must specify a $(White repository) to clone."
+                exit
+            fi
+            
+            git clone $1
+            
+            if [[ "$?" == 0 ]]; then
+                composer install
+                npm install
+                cp .env.example .env
+                php artisan key:generate
+                php artisan migrate
+            fi
+        ;;
+        
+        *)
+            echo "$red[Error]$reset Unknown option $white$opt$reset"
+        ;;
+    esac
+fi

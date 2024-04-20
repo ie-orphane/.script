@@ -4,6 +4,7 @@
 
 CMD=discord
 SRC=~/.script/src/$CMD
+TMP=~/.script/template/$CMD
 
 new () {
     # check new folder
@@ -19,27 +20,19 @@ new () {
         echo "$(Blue [Info]) $(White $2) created!"
     fi
     
-    # virtual environment
-    python3 -m venv .venv
-    source ./.venv/Scripts/activate
-    
-    # packages
-    cp $SRC/requirements.txt ./requirements.txt
-    pip install -r requirements.txt
-    
     # folder structre
-    cp $SRC/bot.py ./bot.py
-    mkdir ./{assets,storage}
-    for dir in 'cogs' 'tasks' 'utils'; do
-        mkdir ./$dir
-        touch $_/__init__.py
-    done
-    
-    # git setup
+    cp -r $TMP/* ./
     cp $SRC/.gitignore ./.gitignore
     cp $SRC/.env.example ./.env.example
     cp $SRC/.env.example ./.env
     echo "# $(basename $(PWD))" > ./README.md
+    # virtual environment
+    python3 -m venv .venv
+    source ./.venv/Scripts/activate
+    echo "$(Green [Info]) $(White virtual environment) created!"
+    # packages
+    echo "$(Blue [Info]) installing packages from $(White requirements.txt)"
+    pip install -r requirements.txt
 }
 
 add() {
