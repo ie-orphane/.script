@@ -61,10 +61,8 @@ add() {
         ;;
         # -d|--data
         -d|--data)
-            for dir in "data" "models"; do
-                mkdir "./$dir"
-                touch $_/__init__.py
-            done
+            mkdir ./{data,models}
+            touch $_/__init__.py
             cp $SRC/__schema__.py ./models/__schema__.py
         ;;
         *)
