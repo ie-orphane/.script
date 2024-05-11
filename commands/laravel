@@ -4,7 +4,6 @@
 
 CMD=laravel
 SRC=~/.script/src/$CMD
-TMP=~/.script/template/$CMD
 
 new() {
     name="."
@@ -74,7 +73,7 @@ add() {
     esac
 }
 
-# function for "laravel -a --authentification" command
+# function for "laravel authentification" command
 auth() {
     case "$1" in
         --breeze|-b)
@@ -104,8 +103,7 @@ else
         ;;
         
         #? laravel add
-        add)
-            shift
+        --tailwind|-t)
             add $@
         ;;
         

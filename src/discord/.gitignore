@@ -160,5 +160,6 @@ cython_debug/
 #.idea/
 
 # discord.py
-data/
 assets/
+data/
+test/

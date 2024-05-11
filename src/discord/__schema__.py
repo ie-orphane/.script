@@ -22,7 +22,32 @@ class ModelEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-class Data(Model):
+class Document(Model):
+    @classmethod
+    def exists(cls, id: str) -> bool:
+        docs = [data.id for data in cls.read_all()]
+        return id in docs
+
+    @classmethod
+    def create(cls, **data) -> None:
+        docs = cls.read_all()
+        docs.append(cls(**data))
+        with open(f"./data/{cls.BASE}.json", "w") as file:
+            json.dump(docs, file, cls=ModelEncoder, indent=2)
+
+    @classmethod
+    def read_all(cls):
+        with open(f"./data/{cls.BASE}.json", "r") as file:
+            return [cls(**x) for x in json.load(file)]
+
+    def remove(self) -> None:
+        docs = self.read_all()
+        docs.remove(self)
+        with open(f"./data/{self.BASE}.json", "w") as file:
+            json.dump(docs, file, cls=ModelEncoder, indent=2)
+
+
+class Collection(Model):
     def __to_dict__(self):
         data_dict = self.__dict__.copy()
         del data_dict["id"]
@@ -31,22 +56,22 @@ class Data(Model):
     @classmethod
     def read(cls, id: int | str):
         try:
-            with open(f"{cls.BASE}/{id}.json", "r") as file:
+            with open(f"./data/{cls.BASE}/{id}.json", "r") as file:
                 return cls(id=int(id), **json.load(file))
         except FileNotFoundError:
             return None
 
     @classmethod
-    def read_all(self):
-        files = os.listdir(self.BASE)
+    def read_all(cls):
+        files = os.listdir(f"./data/{cls.BASE}")
         ids = [file[: file.index(".")] for file in files]
-        return [self.read(id) for id in ids]
+        return [cls.read(id) for id in ids]
 
     def update(self):
-        with open(f"{self.BASE}/{self.id}.json", "w") as file:
+        with open(f"./data/{self.BASE}/{self.id}.json", "w") as file:
             json.dump(self, file, cls=ModelEncoder, indent=2)
         return self
 
     def delete(self):
-        os.remove(f"./{self.BASE}/{self.id}.json")
+        os.remove(f"./data/{self.BASE}/{self.id}.json")
         return self

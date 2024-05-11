@@ -26,10 +26,12 @@ new () {
     cp $SRC/.env.example ./.env.example
     cp $SRC/.env.example ./.env
     echo "# $(basename $(PWD))" > ./README.md
+    
     # virtual environment
     python3 -m venv .venv
     source ./.venv/Scripts/activate
     echo "$(Green [Info]) $(White virtual environment) created!"
+    
     # packages
     echo "$(Blue [Info]) installing packages from $(White requirements.txt)"
     pip install -r requirements.txt
@@ -45,15 +47,28 @@ add() {
             fi
             
             if [[ ! "$2" ]]; then
-                echo -e "$(Red [error]) $(White $CMD add $1) command missed option"
+                echo -e "$(Red [error]) $(White $CMD $1) command missed option"
                 exit
             fi
             
             sed "s/_Name_/\u${2,,}/g; s/_name_/${2,,}/g" $SRC/__cog__.py > ./cogs/__${2,,}__.py
+            echo "$(Green [Info]) $(White ./cogs/__${2,,}__.py) created!"
         ;;
         #  -m|--model
         -m|--model)
-            echo model
+            if [[ ! -d ./models ]]; then
+                echo "$(Red [error]) folder $(White models) not found"
+                exit
+            fi
+            
+            if [[ ! "$2" ]]; then
+                echo -e "$(Red [Error]) $(White $CMD $1) command missed option"
+                exit
+            fi
+            
+            mkdir -p  ./data/${2,,}
+            sed "s/_Name_/\u${2,,}/g; s/_name_/${2,,}/g" $SRC/__model__.py > ./models/__${2,,}__.py
+            echo "$(Green [Info]) $(White ./models/__${2,,}__.py) created!"
         ;;
         #  -t|--task
         -t|--task)
@@ -61,9 +76,15 @@ add() {
         ;;
         # -d|--data
         -d|--data)
+            if [[ -d ./data || -d ./models || -f ./db.schema ]]; then
+                echo "$(Red [Error]) $(White data) already initiliased"
+                exit
+            fi
+            
             mkdir ./{data,models}
             touch $_/__init__.py
             cp $SRC/__schema__.py ./models/__schema__.py
+            cp $SRC/db.schema ./db.schema
         ;;
         *)
             echo "$(Red [Error]) Unknown option $(White $1)"
@@ -71,7 +92,13 @@ add() {
     esac
 }
 
-
+run() {
+    if [[ ! -f "./$1.py" ]]; then
+        echo "$(Red [Error]) No such file $(White $1).py"
+        exit
+    fi
+    python3 "./$1.py"
+}
 
 if [ "$#" -eq 0 ]; then
     echo -e "$(Red [error]) $(White $CMD) command missed option\n$(Yellow [indice]) Try:"
@@ -80,19 +107,11 @@ else
     case "$1" in
         # discord new
         #     create new discord.py project
-        new)
-            new $@
-            # discord run
-            #     run the bot
-        ;;
-        run)
-            if [[ ! -f ./bot.py ]]; then
-                echo "$(Red [Error]) No such file $(White bot.py)"
-                exit
-            fi
-            
-            python3 ./bot.py
-        ;;
+        new) new $@ ;;
+        # discord run
+        #     run the bot
+        run) run bot ;;
+        test) run test ;;
         # discord install
         #     install a dependency and add it to requirements.txt
         install)
