@@ -112,8 +112,8 @@ else
             auth $@
         ;;
         
-        #? laravel clone
-        clone)
+        #? laravel init
+        init)
             shift
             if [[ "$#" == 0 ]]; then
                 echo "$(Red [Error]) You must specify a $(White repository) to clone."
@@ -123,11 +123,7 @@ else
             git clone $1
             
             if [[ "$?" == 0 ]]; then
-                composer install
-                npm install
-                cp .env.example .env
-                php artisan key:generate
-                php artisan migrate
+                cp .env.example .env && composer install && npm install && php artisan key:generate && php artisan migrate
             fi
         ;;
         

@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+. ~/.script/utils/*
+
+CMD=links
+
+declare -a my_array
+
+while true; do
+    read line
+    if [[ $line == "" ]]; then
+        break
+    fi
+    lines=("${lines[@]}" "$line")
+done
+
+folder_name=${lines[0]}
+folder_path=~/Desktop/$folder_name
+
+if [[ -d "$folder_path" ]]; then
+    echo "$(Yellow ✋) $(White "$folder_name/") already exists!"
+else
+    mkdir $folder_path && echo "$(Green ✅) $(White "$folder_name/") successfully created!"
+fi
+
+if [[ $? -ne 0 ]]; then
+    exit $?
+fi
+
+projects=("${lines[@]:1:$((${#lines[@]} - 1))}")
+
+for project in "${projects[@]}"; do
+    name=$(echo "${project}" | cut -d '=' -f1)
+    link=$(echo "${project}" | cut -d '=' -f2)
+
+    if [[ -d $folder_path/$name ]]; then
+        echo "$(Red ❌) $(White "$name/") already cloned!"
+        continue
+    fi
+
+    git clone $link $folder_path/$name
+
+    if [[ $? -eq 0 ]]; then
+        echo "$(Green ✅) $(White "$name/") successfully cloned!"
+    else
+        echo "$(Red ❌) cloning $(White "$name/") failed!"
+    fi
+done

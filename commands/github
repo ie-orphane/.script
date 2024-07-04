@@ -10,36 +10,29 @@ if [ "$#" -eq 0 ]; then
     cat $SRC/README.md
 else
     case "$1" in
-        #? github -c/--commit
-        -c|--commit)
-            if [ "$#" -eq 1 ]; then
-                echo "$(Red [error]) commit message missed!"
-                exit
-            fi
+    #? github -c/--commit
+    -c | --commit)
+        if [ "$#" -eq 1 ]; then
+            echo "$(Red [error]) commit message missed!"
+            exit
+        fi
 
-            git add .
-            git commit -m "$2"
+        git add . && git commit -m "$2"
         ;;
 
-        #? github -l/--link
-        -l|--link)
-            if [ "$#" -eq 1 ]; then
-                echo "$(Red [error]) repository url missed!"
-                exit
-            fi
+    #? github -l/--link
+    -l | --link)
+        if [ "$#" -eq 1 ]; then
+            echo "$(Red [error]) repository url missed!"
+            exit
+        fi
 
-            echo "# $(basename $(PWD))" >> README.md
-            git init
-            git add .
-            git commit -m "initial commit"
-            git branch -M main
-            git remote add origin $2
-            git push -u origin main
+        echo "# $(basename $(PWD))" >>./README.md && git init && git add . && git commit -m "initial commit" && git branch -M main && git remote add origin $2 && git push -u origin main
         ;;
-        
-        *)
-            echo "$(Red [Error]) Unknown option $(White $1)"
+
+    *)
+        echo "$(Red [Error]) Unknown option $(White $1)"
         ;;
     esac
-    
+
 fi

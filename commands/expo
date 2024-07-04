@@ -63,22 +63,24 @@ else
             fi
             
             npx create-expo-app .
+            mv app app-example
             
-            npm i nativewind
-            npm install --save-dev tailwindcss@3.3.2
-            npx tailwindcss init
+            echo "$(Blue [install]) $(White $2) NativeWind!"
+            npm install nativewind@^4.0.1 react-native-reanimated tailwindcss
 
-            rm -rf .git App.js
+            rm -rf .git
             cp -r $TMP/* ./
         ;;
-        #? expo -s|--screen <screen's name>
-        -s|--screen)
-            add $@
+        clear)
+            npm install nativewind@^4.0.1 react-native-reanimated tailwindcss
+            npx pod-install
+            
+            rm -rf .git
+            cp -r $TMP/* ./
         ;;
         
         *)
             echo "$(Red [Error]) Unknown option $(White $1)"
         ;;
     esac
-    
 fi

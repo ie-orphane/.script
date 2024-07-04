@@ -1,1 +1,148 @@
 #!/bin/bash
+
+. ~/.script/utils/*
+
+CMD=react
+SRC=~/.script/src/$CMD
+TMP=~/.script/template/$CMD
+
+# react files
+react_index_html='''<html>
+  <head>
+  <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Web site created using create-react-app" />
+
+    <title>$(basename $(pwd))</title>
+  </head>
+
+  <body>
+    <div id="root"></div>
+  </body>
+</html>'''
+
+react_index_jsx='''import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./index.css"
+import { BrowserRouter } from "react-router-dom";
+
+const root = ReactDOM.createRoot(document.getElementById("root"))
+root.render(
+  <BrowserRouter>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </BrowserRouter>
+)'''
+
+react_app_jsx='''import { Route, Routes } from "react-router-dom";
+import { Home } from "./pages/Home";
+
+const App = () => {
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </>
+  )
+}
+
+export default App'''
+
+react_home_jsx='''
+export const Home = () => {
+    return (
+        <>
+
+        </>
+    )
+}'''
+
+react_tailwind_config_js='''/** @type {import("tailwindcss").Config} */
+module.exports = {
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}'''
+
+# Function for "react add --dependencies" command
+add() {
+    # Check if there are command-line arguments
+    if [ "$#" -eq 0 ]; then
+        echo "\n$red[error]$white react add$reset command missed an argument"
+        return 1
+    fi
+
+    # Iterate over the positional parameters
+    for arg in "$@"; do
+        case "$arg" in
+        --tailwind | -t)
+            npm install -D tailwindcss
+            npx tailwindcss init
+            echo "@tailwind base$br@tailwind components$br@tailwind utilities" >./src/index.css
+            echo "$react_tailwind_config_js" >./tailwind.config.js
+            ;;
+
+        *)
+            echo "$red[Error]$reset Unknown argument $white$arg$reset"
+            ;;
+        esac
+    done
+}
+
+# Function for "react clear" command
+clear() {
+    rm -rf .git public src
+    mkdir -p ./{public,src}
+    mkdir $_/{components,pages,layouts,assets}
+    mkdir ./src/assets/{images,fonts,test}
+    touch ./src/index.sass
+
+    echo "$react_index_html" >./public/index.html
+    echo "$react_index_jsx" >./src/index.jsx
+    echo "$react_app_jsx" >./src/App.jsx
+    echo "$react_home_jsx" >./src/pages/Home.jsx
+    echo "# $(basename $(pwd))" >README.md
+}
+
+#^ react add -t/--tailwind -b/--bootstrap
+#^ react new
+#^ react clear
+
+if [ "$#" -eq 0 ]; then
+    echo -e "\n$red[error]$reset$white react$reset command missed option\n\n$yellow[indice]$reset Try:   react new\n                react add <dependencies>\n"
+    return 1
+fi
+
+# Iterate over the positional parameters
+case "$1" in
+    #? react clear
+    clear)
+        clear
+        ;;
+
+    #? react new
+    new)
+        npx create-react-app .
+        npm install react-router-dom
+
+        clear
+        ;;
+
+    #? react add <dependencies: --tailwind>
+    add)
+        shift
+        add $@
+        ;;
+
+    *)
+        echo "$red[Error]$reset Unknown option $white$opt$reset"
+        ;;
+esac
