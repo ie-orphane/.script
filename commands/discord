@@ -143,3 +143,21 @@ else
     esac
     
 fi
+
+function stage {
+    if [[ $# -eq 0 ]]; then
+        echo "[Error] Missing commit message !"
+        return 1
+    fi
+
+    if [[ $1 == "-a" ]]; then
+        git add .
+        shift
+    else
+        git add -- . ':!bot'
+    fi
+
+    if [[ $? -eq 0 ]]; then
+        git commit -m $1
+    fi
+}
