@@ -1,6 +1,7 @@
 ROOT=~/.script
 
 alias lahya="echo \"9aleb 3liha :)\""
+alias script="code $ROOT || vim $ROOT || echo \"[ERROR] opening .script failed !\""
 
 
 # ------- norminette -------
@@ -107,6 +108,11 @@ function go {
     -cp | --current-project)
         cd $USB_PATH/1337/Cursus/$CURRENT_PROJECT
         ;;
+    -h | --help)
+        echo "NAME\n\tgo — navigate through user and usb\n"
+        echo "OPTIONS\n\t-u  | --usb\n\t-u  | --usb\n\t-p  | --pool\n\t-c  | --cursus"
+        echo "\t-cp |  --current-project\n\t-h  | --help"
+        ;;
     *)
         echo "[Error] invalid option $1"
         ;;
@@ -120,5 +126,17 @@ PROFILE=$ROOT/.profile
 alias profile="code $PROFILE || vim $PROFILE || echo \"[ERROR] opening profile failed !\""
 alias update="source $PROFILE && echo \"[Success] profile updated.\" || echo \"[Error] updating profile failed !\""
 
+
+# ------- colorful -------
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
 
 echo "Operating System: $OS ($OSTYPE)\n"
