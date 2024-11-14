@@ -59,8 +59,6 @@ function stage {
 
 
 # -------  coding ------- 
-CURRENT_PROJECT=ft_printf
-
 function run {
     cc -Wall -Wextra -Werror $@ -o main && ./main
     rm -f ./main
@@ -98,6 +96,9 @@ function go {
     fi
 
     case "$1" in
+    -)
+        cd -
+        ;;
     -u | --usb)
         cd $USB_PATH
         ;;
@@ -112,12 +113,16 @@ function go {
         ;;
     -p | -project)
         if [[ $# -lt 2 ]]; then
-            echo "$(Red '[ERROR]') $(White 'directory') is missing"
+            echo "$(Red '[ERROR]') $(White 'directory') is missing !"
             return 1
         fi
         cd $USB_PATH/1337/Cursus/$2
         ;;
     -c | --current-project)
+        if [[ -z $CURRENT_PROJECT ]]; then
+            echo "$(Red '[ERROR]') current project not found !"
+            return 1
+        fi
         cd $USB_PATH/1337/Cursus/$CURRENT_PROJECT
         ;;
     -h | --help)
@@ -133,7 +138,7 @@ function go {
         echo "\t-h, --help\t\tdisplay this message !"
         ;;
     *)
-        echo "$(Red '[ERROR]') invalid option $(White '$1')"
+        echo "$(Red '[ERROR]') invalid option $(White '$1') !"
         return 1
         ;;
     esac
