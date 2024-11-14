@@ -1,5 +1,7 @@
 ROOT=~/.script
 
+source $ROOT/utils/colorful
+
 alias lahya="echo \"9aleb 3liha :)\""
 alias script="code $ROOT || vim $ROOT || echo \"[ERROR] opening .script failed !\""
 
@@ -102,19 +104,23 @@ function go {
     -p | --pool)
         cd $USB_PATH/1337/Pool
         ;;
-    -c | --cursus)
+    -C | --cursus)
         cd $USB_PATH/1337/Cursus
         ;;
-    -cp | --current-project)
+    -c | --current-project)
         cd $USB_PATH/1337/Cursus/$CURRENT_PROJECT
         ;;
     -h | --help)
-        echo "NAME\n\tgo — navigate through user and usb\n"
-        echo "OPTIONS\n\t-u  | --usb\n\t-u  | --usb\n\t-p  | --pool\n\t-c  | --cursus"
-        echo "\t-cp |  --current-project\n\t-h  | --help"
+        echo "$(White 'NAME'):\n\tgo - Navigate through\n"
+        echo "$(White 'USAGE'):\n\tgo [OPTION]\n"
+        echo "$(White 'OPTIONS'):"
+        echo "\t-u, --usb\t\tchange current directory to usb"
+        echo "\t-p, --pool\n\t-C, --cursus"
+        echo "\t-c, --current-project\tdisplay this"
+        echo "\t-h, --help"
         ;;
     *)
-        echo "[Error] invalid option $1"
+        echo "$(Red '[ERROR]') invalid option $(White '$1')"
         ;;
     esac
 }
