@@ -1,9 +1,9 @@
-ROOT=~/.script
+SCRIPT_ROOT=$HOME/.script
 
-source $ROOT/utils/colorful
+source $SCRIPT_ROOT/utils/colorful
 
 alias lahya="echo \"9aleb 3liha :)\""
-alias script="code $ROOT || vim $ROOT || echo \"[ERROR] opening .script failed !\""
+alias script="code $SCRIPT_ROOT || vim $SCRIPT_ROOT || echo \"[ERROR] opening .script failed !\""
 
 
 # ------- norminette -------
@@ -101,6 +101,9 @@ function go {
     -u | --usb)
         cd $USB_PATH
         ;;
+    -s | --script)
+        cd $SCRIPT_ROOT
+        ;;
     -P | --pool)
         cd $USB_PATH/1337/Pool
         ;;
@@ -108,7 +111,7 @@ function go {
         cd $USB_PATH/1337/Cursus
         ;;
     -p | -project)
-        if [[ $# -eq 2 ]]; then
+        if [[ $# -lt 2 ]]; then
             echo "$(Red '[ERROR]') $(White 'directory') is missing"
             return 1
         fi
@@ -121,11 +124,12 @@ function go {
         echo "$(White 'NAME'):\n\tgo - Navigate through directories\n"
         echo "$(White 'USAGE'):\n\tgo [OPTION] [DIRECTORY*]\n"
         echo "$(White 'OPTIONS'):"
-        echo "\t-u, --usb\t\tto usb (KINGSTON)."
-        echo "\t-P, --pool\t\tto pool (1337/Pool)."
-        echo "\t-C, --cursus\t\tto cursus (1337/Cursus)."
-        echo "\t-p, --project <name>\tto a working project."
-        echo "\t-c, --current-project\tto the current project (1337/Cursus/$CURRENT_PROJECT)."
+        echo "\t-u, --usb\t\tto usb.\t\t\t($(Black $USB_PATH))"
+        echo "\t-s, --script\t\tto .script.\t\t($(Black $SCRIPT_ROOT))"
+        echo "\t-P, --pool\t\tto pool.\t\t($(Black $USB_PATH/1337/Pool))"
+        echo "\t-C, --cursus\t\tto cursus.\t\t($(Black $USB_PATH/1337/Cursus))"
+        echo "\t-p, --project <name>\tto a working project.\t($(Black $USB_PATH/1337/Cursus/\${name}))"
+        echo "\t-c, --current-project\tto the current project.\t($(Black $USB_PATH/1337/Cursus/$CURRENT_PROJECT))"
         echo "\t-h, --help\t\tdisplay this message !"
         ;;
     *)
@@ -137,7 +141,7 @@ function go {
 
 
 # ------- shell profile -------
-PROFILE=$ROOT/.profile
+PROFILE=$SCRIPT_ROOT/.profile
 
 alias profile="code $PROFILE || vim $PROFILE || echo \"[ERROR] opening profile failed !\""
 alias update="source $PROFILE && echo \"[Success] profile updated.\" || echo \"[Error] updating profile failed !\""
