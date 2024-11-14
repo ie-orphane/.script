@@ -101,26 +101,36 @@ function go {
     -u | --usb)
         cd $USB_PATH
         ;;
-    -p | --pool)
+    -P | --pool)
         cd $USB_PATH/1337/Pool
         ;;
     -C | --cursus)
         cd $USB_PATH/1337/Cursus
         ;;
+    -p | -project)
+        if [[ $# -eq 2 ]]; then
+            echo "$(Red '[ERROR]') $(White 'directory') is missing"
+            return 1
+        fi
+        cd $USB_PATH/1337/Cursus/$2
+        ;;
     -c | --current-project)
         cd $USB_PATH/1337/Cursus/$CURRENT_PROJECT
         ;;
     -h | --help)
-        echo "$(White 'NAME'):\n\tgo - Navigate through\n"
-        echo "$(White 'USAGE'):\n\tgo [OPTION]\n"
+        echo "$(White 'NAME'):\n\tgo - Navigate through directories\n"
+        echo "$(White 'USAGE'):\n\tgo [OPTION] [DIRECTORY*]\n"
         echo "$(White 'OPTIONS'):"
-        echo "\t-u, --usb\t\tchange current directory to usb"
-        echo "\t-p, --pool\n\t-C, --cursus"
-        echo "\t-c, --current-project\tdisplay this"
-        echo "\t-h, --help"
+        echo "\t-u, --usb\t\tto usb (KINGSTON)."
+        echo "\t-P, --pool\t\tto pool (1337/Pool)."
+        echo "\t-C, --cursus\t\tto cursus (1337/Cursus)."
+        echo "\t-p, --project <name>\tto a working project."
+        echo "\t-c, --current-project\tto the current project (1337/Cursus/$CURRENT_PROJECT)."
+        echo "\t-h, --help\t\tdisplay this message !"
         ;;
     *)
         echo "$(Red '[ERROR]') invalid option $(White '$1')"
+        return 1
         ;;
     esac
 }
