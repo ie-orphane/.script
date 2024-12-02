@@ -29,6 +29,7 @@ function fnorm {
 
 # ------- git -------
 alias status="git status --short --branch"
+alias revert="git reset --soft HEAD~1"
 
 function push {
 	for remote in $(git remote); do
@@ -147,9 +148,28 @@ function go {
 
 # ------- shell profile -------
 PROFILE=$SCRIPT_ROOT/.profile
+SOURCE=~/.$(basename "$SHELL")rc
 
 alias profile="code $PROFILE || vim $PROFILE || echo \"[ERROR] opening profile failed !\""
-alias update="source $PROFILE && echo \"[Success] profile updated.\" || echo \"[Error] updating profile failed !\""
+
+function update {
+    to_update=($SOURCE $PROFILE)
+
+    case "$1" in
+        source|s)
+            to_update=($SOURCE)
+        ;;
+        profile|p)
+            to_update=($PROFILE)
+        ;;
+    esac
+
+    for item in $to_update; do
+        source $item > /dev/null 2>&1 && \
+        echo "$(Green 'dot-update:') $(basename "$item") updated." || \
+        echo "$(Red 'dot-update:') updating $(basename "$item") failed !"
+    done
+}
 
 
 # ------- colorful -------
@@ -164,4 +184,6 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
+
+# ------- session -------
 echo "Operating System: $OS ($OSTYPE)\n"
