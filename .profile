@@ -58,6 +58,18 @@ function stage {
     git add . && git commit -m $1
 }
 
+function ginit {
+    if ! [[ -d .git ]]; then
+        git init && \
+        git config user.name "ie-orphane" && \
+        git config user.email "ilyasselyatime0@gmail.com" && \
+        git branch -M main && \
+        git add . && \
+        git commit -m "inital commit" || \
+        rm -rf .git
+    fi
+}
+
 
 # -------  coding ------- 
 function run {
@@ -74,7 +86,6 @@ case "$OSTYPE" in
 	"linux-gnu"*)
 		os="Linux"
 		USB_PATH=/media/$(whoami)
-        alias code="flatpak run com.visualstudio.code"
 		;;
 	"darwin"*)
 		os="macOS"
@@ -123,6 +134,10 @@ function go {
         if [[ -z $CURRENT_PROJECT ]]; then
             echo "$(Red '[ERROR]') current project not found !"
             return 1
+        fi
+        if [[ $2 == "--" ]]; then
+            (cd $USB_PATH/1337/Cursus/$CURRENT_PROJECT && code .)
+            return 0
         fi
         cd $USB_PATH/1337/Cursus/$CURRENT_PROJECT
         ;;
@@ -175,7 +190,7 @@ function update {
 # ------- colorful -------
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
+    alias ls='ls -F -h -v --color=auto'
     alias dir='dir --color=auto'
     alias vdir='vdir --color=auto'
 
