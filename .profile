@@ -7,10 +7,44 @@ alias script="code $SCRIPT_ROOT || vim $SCRIPT_ROOT || echo \"[ERROR] opening .s
 
 
 # ------- norminette -------
-alias hnorm="norminette -R CheckDefine --use-gitignore *.h"
-
 function norm {
-	norminette -R CheckForbiddenSourceHeader --use-gitignore ${1:-*.c}
+    case "$1" in
+    -h | --header)
+        shift
+        for file in ${1:-**/*.h}; do
+            out=$(norminette --use-gitignore \
+                -R CheckForbiddenSourceHeader -R CheckDefine \
+                $file)
+            if [[ $? -ne 0 ]]; then
+                echo "$out" | awk 'NR==1 {print "\033[1;31m" $0 "\033[0m"}'
+                echo "$out" | awk 'NR!=1 {gsub("Error: ", "\t"); print}'
+            fi
+        done
+        ;;
+    -c | --cfile)
+        shift
+        for file in ${1:-**/*.c}; do
+            out=$(norminette --use-gitignore \
+                -R CheckForbiddenSourceHeader \
+                $file)
+            if [[ $? -ne 0 ]]; then
+                echo "$out" | awk 'NR==1 {print "\033[1;31m" $0 "\033[0m"}'
+                echo "$out" | awk 'NR!=1 {gsub("Error: ", "\t"); print}'
+            fi
+        done
+        ;;
+    *)
+        for file in ${1:-**/*.[ch]}; do
+            out=$(norminette --use-gitignore \
+                -R CheckForbiddenSourceHeader -R CheckDefine \
+                $file)
+            if [[ $? -ne 0 ]]; then
+                echo "$out" | awk 'NR==1 {print "\033[1;31m" $0 "\033[0m"}'
+                echo "$out" | awk 'NR!=1 {gsub("Error: ", "\t"); print}'
+            fi
+        done
+        ;;
+    esac
 }
 
 function fnorm {
